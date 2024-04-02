@@ -1,0 +1,11 @@
+/* Your app custom styles here */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.text-clr-primary {
+  color: #B90B0B;
+}
+.bg-clr-primary {
+  background: #B90B0B;
+}
