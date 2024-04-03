@@ -1,5 +1,14 @@
 <script setup>
-import AppoyLogo from '../assets/appoy-logo-official-white.png';
+import { f7 } from 'framework7-vue';
+import AppoyLogoWhite from '../assets/appoy-logo-official-white.png';
+
+// Redirection to other Page
+const goToPage = (route) => {
+  const animate = window.innerWidth <= 1023;
+  f7.views.main.router.navigate(route, {
+    animate: animate,
+  });
+};
 </script>
 
 <template>
@@ -8,7 +17,7 @@ import AppoyLogo from '../assets/appoy-logo-official-white.png';
         <div class="bg-clr-primary h-[60vh]">
             <div class="test flex flex-col items-center justify-center h-[60vh]">
                 <div class="w-32 object-cover overflow-hidden">
-                    <img class="w-full object-cover h-full" :src="AppoyLogo" alt="Appoy" />
+                    <img class="w-full object-cover h-full" :src="AppoyLogoWhite" alt="Appoy" />
                 </div>
                 <h3 class="text-white mt-4 font-medium text-lg">Be safe any time any where</h3>
             </div>
@@ -77,7 +86,7 @@ import AppoyLogo from '../assets/appoy-logo-official-white.png';
                         </div>
                         <!-- Action Button -->
                         <div class="w-full lg:w-1/6 mt-12">
-                            <f7-button large tonal round>Get Started</f7-button>
+                            <f7-button @click="goToPage('/login')" large tonal round>Get Started</f7-button>
                         </div>
 
                         <p class="mt-2 text-sm text-gray-500">Version 1.0.0</p>
