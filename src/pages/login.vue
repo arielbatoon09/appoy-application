@@ -25,14 +25,15 @@ const goToPage = (route) => {
             <!-- Right Panel -->
             <div class="w-full bg-white lg:bg-gray-50 lg:w-1/2 flex items-center justify-center -mt-14 lg:mt-0">
                 <div class="max-w-md w-full p-6">
-                  <div class="flex flex-col items-center">
-                    <img class="w-20" :src="AppoyLogo" />
-                  </div>
+                    <div class="flex flex-col items-center">
+                        <img class="w-20" :src="AppoyLogo" />
+                    </div>
                     <f7-block class="mt-3">
                         <h2 class="text-3xl font-semibold text-black text-center mb-3">Welcome to Appoy</h2>
                         <h3 class="text-base text-gray-500 text-center">New to Appoy?
                             <span @click="goToPage('/signup')"
-                                class="text-clr-primary hover:underline font-medium cursor-pointer">Create an account</span>
+                                class="text-clr-primary hover:underline font-medium cursor-pointer">Create an
+                                account</span>
                         </h3>
                     </f7-block>
                     <form class="space-y-4">

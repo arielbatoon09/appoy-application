@@ -2,6 +2,8 @@
 import OnboardingPage from '../pages/onboarding.vue';
 import LoginPage from '../pages/login.vue';
 import SignupPage from '../pages/signup.vue';
+import DashboardPage from '../pages/dashboard.vue';
+import NotFound404 from '../pages/404.vue';
 
 var routes = [
   {
@@ -15,6 +17,14 @@ var routes = [
   {
     path: '/signup',
     component: SignupPage,
+  },
+  {
+    path: '/dashboard',
+    component: DashboardPage,
+  },
+  {
+    path: '/(.*)',
+    component: NotFound404,
   }
 ];
 

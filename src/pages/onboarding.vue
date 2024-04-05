@@ -1,14 +1,30 @@
 <script setup>
 import { f7 } from 'framework7-vue';
+import { ref, onMounted } from 'vue';
+import useCookies from 'vue-cookies';
 import AppoyLogoWhite from '../assets/appoy-logo-official-white.png';
+
+const onboardingStatus = ref(true);
 
 // Redirection to other Page
 const goToPage = (route) => {
-  const animate = window.innerWidth <= 1023;
-  f7.views.main.router.navigate(route, {
-    animate: animate,
-  });
+    const animate = window.innerWidth <= 1023;
+    f7.views.main.router.navigate(route, {
+        animate: animate,
+    });
+
+    // Set the cookies upon clicking "Get Started"
+    setOnboardingStatus();
 };
+
+// Set Cookies for Onboarding
+const setOnboardingStatus = () => {
+    const currentDate = new Date();
+    const expirationDate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const expires = expirationDate.toUTCString();
+    useCookies.set('completedOnboarding', onboardingStatus.value, expires);
+};
+
 </script>
 
 <template>
