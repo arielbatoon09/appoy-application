@@ -47,7 +47,7 @@ const setOnboardingStatus = () => {
                     <div class="flex flex-col items-center px-6">
                         <!-- Info -->
                         <div class="text-center mt-10">
-                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Emergency Rescue</h3>
+                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Emergency Fire Rescue</h3>
                             <p class="text-gray-600 text-base">Ask for help conveniently.</p>
                         </div>
                         <!-- Slide Indicator -->
@@ -69,8 +69,8 @@ const setOnboardingStatus = () => {
                     <div class="flex flex-col items-center px-6">
                         <!-- Info -->
                         <div class="text-center mt-10">
-                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Emergency Rescue 2</h3>
-                            <p class="text-gray-600 text-base">Ask for help conveniently 2.</p>
+                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Mitigate Fire Incidents</h3>
+                            <p class="text-gray-600 text-base">One click and help is on your way.</p>
                         </div>
                         <!-- Slide Indicator -->
                         <div class="flex gap-2 mt-5">
@@ -91,8 +91,8 @@ const setOnboardingStatus = () => {
                     <div class="flex flex-col items-center px-6">
                         <!-- Info -->
                         <div class="text-center mt-10">
-                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Emergency Rescue 3</h3>
-                            <p class="text-gray-600 text-base">Ask for help conveniently 3.</p>
+                            <h3 class="text-gray-700 text-2xl font-bold mb-2">APPoy</h3>
+                            <p class="text-gray-600 text-base">Ready in any fire emergencies.</p>
                         </div>
                         <!-- Slide Indicator -->
                         <div class="flex gap-2 mt-5">
