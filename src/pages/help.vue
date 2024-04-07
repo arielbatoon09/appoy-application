@@ -41,7 +41,7 @@ const googleMapLink = computed(() => {
             <!-- Action for Help -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-10">
                 <!-- Learn more: Growth Stage -->
-                <div class="bg-white rounded-xl h-72 w-full p-6 text-center app-shadow">
+                <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
                     <div class="flex flex-col items-center mb-4">
                         <svg class="w-12 h-12 bg-yellow-500 text-white rounded-full p-2" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -58,7 +58,7 @@ const googleMapLink = computed(() => {
                     <f7-button @click="getCoordinates" color="yellow" large tonal round>Ask Help</f7-button>
                 </div>
                 <!-- Learn more: Fully Developed Stage -->
-                <div class="bg-white rounded-xl h-72 w-full p-6 text-center app-shadow">
+                <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
                     <div class="flex flex-col items-center mb-4">
                         <svg class="w-12 h-12 bg-red-500 text-white rounded-full p-2" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -74,7 +74,7 @@ const googleMapLink = computed(() => {
                     <f7-button @click="getCoordinates" color="red" large tonal round>Ask Help</f7-button>
                 </div>
                 <!-- Learn more: Decay Stage -->
-                <div class="bg-white rounded-xl h-72 w-full p-6 text-center app-shadow">
+                <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
                     <div class="flex flex-col items-center mb-4">
                         <svg class="w-12 h-12 bg-orange-500 text-white rounded-full p-2" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"

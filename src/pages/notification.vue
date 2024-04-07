@@ -7,6 +7,13 @@ const currentPage = 'notification';
 
 <template>
     <MainLayout :currentPage="currentPage">
-        <div>Notification</div>
+        <div class="space-y-7 mb-20">
+            <div>
+                <h2 class="text-xl font-normal text-gray-500">Appoy</h2>
+                <h3 class="text-3xl text-gray-800 font-bold">Notifications</h3>
+            </div>
+
+
+        </div>
     </MainLayout>
 </template>
