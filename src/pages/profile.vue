@@ -7,7 +7,7 @@ const currentPage = 'profile';
 
 <template>
     <MainLayout :currentPage="currentPage">
-        <div class="space-y-7">
+        <div class="space-y-7 mb-20">
             <div>
                 <h2 class="text-xl font-normal text-gray-500">Appoy</h2>
                 <h3 class="text-3xl text-gray-800 font-bold">Settings</h3>
@@ -22,7 +22,7 @@ const currentPage = 'profile';
                     </div>
                     <h5 class="font-bold text-2xl text-gray-700 mt-5">Ariel Batoon</h5>
                     <p class="text-base text-gray-600 font-medium mb-7">09310367164</p>
-                    <f7-button fill class="w-1/2">Logout</f7-button>
+                    <f7-button fill class="w-full lg:w-1/2">Logout</f7-button>
                 </div>
             </div>
         </div>

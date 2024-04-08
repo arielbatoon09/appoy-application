@@ -18,3 +18,6 @@
 .sidebar-clr-primary:hover {
   background: #af0606;
 }
+.ripple-wave {
+  background: transparent;
+}

@@ -1,5 +1,22 @@
 <script setup>
+import { f7 } from 'framework7-vue';
+import { ref } from 'vue';
 import AppoyLogo from '../assets/appoy-logo-official.png';
+
+const isModalOpen = ref(false);
+
+// Redirection to other Page
+const goToPage = (route) => {
+    const animate = window.innerWidth <= 1023;
+    f7.views.main.router.navigate(route, {
+        animate: animate,
+    });
+
+};
+
+const toggleModal = () => {
+    isModalOpen.value = !isModalOpen.value;
+};
 
 </script>
 <template>
@@ -11,18 +28,40 @@ import AppoyLogo from '../assets/appoy-logo-official.png';
             </div>
 
             <!-- Profile Settings -->
-            <div class="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-2 rounded-lg transition delay-75">
+            <div @click="toggleModal"
+                class="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-2 rounded-lg transition delay-75">
                 <div class="bg-yellow-800 text-white rounded-full w-10 h-10 flex flex-col justify-center items-center">
                     <p class="font-medium text-xl">A</p>
                 </div>
                 <div class="hidden lg:flex">
-                    <h4 class="text-base text-gray-500">Hi, <span class="text-gray-700 font-bold">Ariel Batoon</span></h4>
-                    <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <h4 class="text-base text-gray-500">Hi, <span class="text-gray-700 font-bold">Ariel Batoon</span>
+                    </h4>
+                    <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="m8 10 4 4 4-4" />
                     </svg>
                 </div>
+            </div>
+
+            <!-- Modal Profile Dropdown -->
+            <div v-if="isModalOpen"
+                class="absolute bg-white w-[300px] h-[250px] p-6 right-4 top-20 rounded-xl app-shadow"
+                :class="{ 'transition-opacity duration-300 ease-in-out': isModalOpen }">
+                <h2 class="text-gray-400 font-medium text-lg mb-4">User Profile</h2>
+                <div @click="goToPage('/profile'), toggleModal()" class="cursor-pointer flex items-center hover:bg-gray-100 gap-3 mb-4 rounded-lg delay-75 border-b p-2">
+                    <div
+                        class="bg-yellow-800 text-white rounded-full w-16 h-16 flex flex-col justify-center items-center">
+                        <p class="font-medium text-4xl">A</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg text-gray-600 font-medium">Ariel Batoon</h4>
+                        <p class="text-gray-400 font-normal text-base">0912345678</p>
+                    </div>
+                </div>
+                <f7-button fill>
+                    Logout
+                </f7-button>
             </div>
         </div>
     </header>

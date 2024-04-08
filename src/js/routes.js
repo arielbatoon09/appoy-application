@@ -6,7 +6,7 @@ import DashboardPage from '../pages/dashboard.vue';
 import ProfilePage from '../pages/profile.vue';
 import HelpPage from '../pages/help.vue';
 import NotificationPage from '../pages/notification.vue';
-import EmergencyListPage from '../pages/emergencylist.vue';
+import EmergencyListPage from '../pages/emergency.vue';
 import NotFound404 from '../pages/404.vue';
 
 var routes = [
@@ -31,7 +31,7 @@ var routes = [
     component: HelpPage,
   },
   {
-    path: '/list/emergency',
+    path: '/emergency',
     component: EmergencyListPage,
   },
   {
