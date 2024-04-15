@@ -1,7 +1,73 @@
 <script setup>
 import { f7 } from 'framework7-vue';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../js/store/auth.store';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
 import WelcomeIllustration from '../assets/welcome-illustration.svg';
 import AppoyLogo from '../assets/appoy-logo-official.png';
+
+const authStore = useAuthStore();
+const toastWithButton = ref(null);
+const isRequest = ref(false);
+
+const FormData = ref({
+    email: null,
+    password: null,
+});
+
+const errorMsg = ref({
+    email: null,
+    password: null,
+});
+
+const handleLogin = async () => {
+    isRequest.value = true;
+    const response = await authStore.login(FormData.value);
+    isRequest.value = false;
+
+    console.log(response);
+
+    // Success response
+    if (response.code === 200) {
+        // Show the toast
+        if (!toastWithButton.value) {
+            toastWithButton.value = f7.toast.create({
+                text: response.message,
+                closeButton: true,
+                closeButtonText: 'Okay',
+                closeButtonColor: 'green',
+                closeTimeout: 3000,
+            });
+        }
+
+        // Open the toast
+        toastWithButton.value.open();
+
+        // Redirect the user to dashboard page
+        goToPage('/dashboard')
+    }
+
+    // Null Error
+    errorMsg.value.email = null;
+    errorMsg.value.password = null;
+
+    // Switch Case for Error Message
+    switch (response.source) {
+        case 'email':
+            errorMsg.value.email = response.message;
+            errorMsg.value.password = response.message;
+            break;
+    }
+};
+
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            goToPage('/dashboard');
+        }
+    });
+};
 
 // Redirection to other Page
 const goToPage = (route) => {
@@ -10,6 +76,10 @@ const goToPage = (route) => {
         animate: animate,
     });
 };
+
+onMounted(() => {
+    isLoggedState();
+});
 </script>
 
 <template>
@@ -38,20 +108,21 @@ const goToPage = (route) => {
                     </f7-block>
                     <form class="space-y-4">
                         <f7-list>
-                            <f7-list-input outline label="Phone" floating-label type="tel"
-                                placeholder="Your phone number" clear-button>
+                            <f7-list-input v-model:value="FormData.email" :error-message="errorMsg.email"
+                                error-message-force outline label="Email" floating-label type="email"
+                                placeholder="Your email address" clear-button>
                                 <template #media>
                                     <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                         viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="1.5"
-                                            d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z" />
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+                                            d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" />
                                     </svg>
                                 </template>
                             </f7-list-input>
 
-                            <f7-list-input outline label="Password" floating-label type="password"
+                            <f7-list-input v-model:value="FormData.password" :error-message="errorMsg.password"
+                                error-message-force outline label="Password" floating-label type="password"
                                 placeholder="Your password" clear-button>
                                 <template #media>
                                     <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
@@ -65,7 +136,8 @@ const goToPage = (route) => {
                             </f7-list-input>
 
                             <f7-list-item>
-                                <f7-button class="w-full" fill large>Login</f7-button>
+                                <f7-button preloader :loading="isRequest" @click="handleLogin" class="w-full" fill
+                                    large>Login</f7-button>
                             </f7-list-item>
                         </f7-list>
                     </form>

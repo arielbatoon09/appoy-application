@@ -1,19 +1,46 @@
 <script setup>
+import { f7 } from 'framework7-vue';
+import { ref, onMounted } from 'vue';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../../firebase';
 import Header from '../header.vue';
 import Sidebar from '../sidebar.vue';
 import MobileMenu from '../menu.vue';
+
+const userData = ref({});
 
 const props = defineProps({
   currentPage: String
 });
 
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            goToPage('/login');
+        } else {
+            userData.value = user;
+        }
+    });
+};
+
+// Redirection to other Page
+const goToPage = (route) => {
+    const animate = window.innerWidth <= 1023;
+    f7.views.main.router.navigate(route, {
+        animate: animate,
+    });
+};
+
+onMounted(() => {
+    isLoggedState();
+});
 </script>
 
 <template>
     <f7-page name="main-page" class="bg-gray-50">
         <div class="flex min-h-screen overflow-hidden w-full">
             <!-- Header -->
-            <Header />
+            <Header :userData="userData" />
 
             <!-- Desktop Sidebar -->
             <Sidebar :currentPage="props.currentPage" />
@@ -29,7 +56,7 @@ const props = defineProps({
             </div>
 
             <!-- Mobile Menu -->
-            <MobileMenu />
+            <MobileMenu :currentPage="props.currentPage" />
         </div>
     </f7-page>
 </template>

@@ -1,7 +1,97 @@
 <script setup>
 import { f7 } from 'framework7-vue';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../js/store/auth.store';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
 import WelcomeIllustration from '../assets/welcome-illustration.svg';
 import AppoyLogo from '../assets/appoy-logo-official.png';
+
+const authStore = useAuthStore();
+const toastWithButton = ref(null);
+const isRequest = ref(false);
+const showPassword = ref(false);
+
+const FormData = ref({
+    fullname: null,
+    email: null,
+    password: null,
+    terms: false,
+});
+
+const errorMsg = ref({
+    fullname: null,
+    email: null,
+    password: null,
+    terms: null,
+});
+
+// Handle Signup functionality
+const handleSignUp = async () => {
+    isRequest.value = true;
+    const response = await authStore.signup(FormData.value);
+    isRequest.value = false;
+
+    // Success response
+    if (response.code === 200) {
+        // Show the toast
+        if (!toastWithButton.value) {
+            toastWithButton.value = f7.toast.create({
+                text: response.message,
+                closeButton: true,
+                closeButtonText: 'Okay',
+                closeButtonColor: 'green',
+                closeTimeout: 3000,
+            });
+        }
+
+        // Open the toast
+        toastWithButton.value.open();
+
+        // Redirect the user to login page
+        goToPage('/login')
+
+    }
+
+    // Null Error
+    errorMsg.value.fullname = null;
+    errorMsg.value.email = null;
+    errorMsg.value.password = null;
+
+    // Switch Case for Error Message
+    switch (response.source) {
+        case 'fullname':
+            errorMsg.value.fullname = response.message;
+            break;
+        case 'email':
+            errorMsg.value.email = response.message;
+            break;
+        case 'password':
+            errorMsg.value.password = response.message;
+            break;
+        case 'terms':
+            errorMsg.value.fullname = response.message;
+            errorMsg.value.email = response.message;
+            errorMsg.value.password = response.message;
+            break;
+    }
+};
+
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            goToPage('/dashboard');
+        }
+    });
+};
+
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
+
+const toggleTermsCheckbox = () => {
+    FormData.value.terms = !FormData.value.terms;
+};
 
 // Redirection to other Page
 const goToPage = (route) => {
@@ -10,6 +100,10 @@ const goToPage = (route) => {
         animate: animate,
     });
 };
+
+onMounted(() => {
+    isLoggedState();
+});
 </script>
 
 <template>
@@ -37,8 +131,10 @@ const goToPage = (route) => {
                     </f7-block>
                     <form class="space-y-4">
                         <f7-list>
-                            <f7-list-input outline label="Full Name" floating-label type="text" placeholder="Your name"
-                                clear-button>
+                            <!-- Full Name -->
+                            <f7-list-input v-model:value="FormData.fullname" :error-message="errorMsg.fullname"
+                                error-message-force outline label="Full Name" floating-label type="text"
+                                placeholder="Your name" clear-button>
                                 <template #media>
                                     <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
@@ -50,21 +146,24 @@ const goToPage = (route) => {
                                 </template>
                             </f7-list-input>
 
-                            <f7-list-input outline label="Phone" floating-label type="tel"
-                                placeholder="Your phone number" clear-button>
+                            <!-- Email -->
+                            <f7-list-input v-model:value="FormData.email" :error-message="errorMsg.email"
+                                error-message-force outline label="Email" floating-label type="email"
+                                placeholder="Your email address" clear-button>
                                 <template #media>
                                     <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                         viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="1.5"
-                                            d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z" />
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+                                            d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z" />
                                     </svg>
                                 </template>
                             </f7-list-input>
 
-                            <f7-list-input outline label="Password" floating-label type="password"
-                                placeholder="Your password" clear-button>
+                            <!-- Password -->
+                            <f7-list-input v-model:value="FormData.password" :error-message="errorMsg.password"
+                                error-message-force outline label="Password" floating-label
+                                :type="showPassword ? 'text' : 'password'" placeholder="Your password" clear-button>
                                 <template #media>
                                     <svg class="w-[24px] h-[24px] text-gray-700" aria-hidden="true"
                                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
@@ -76,11 +175,37 @@ const goToPage = (route) => {
                                 </template>
                             </f7-list-input>
 
-                            <f7-list-item checkbox title="Agree on our Terms and Conditions."
-                                name="demo-checkbox"></f7-list-item>
+                            <!-- Show password -->
+                            <f7-list-item class="-mt-4" v-show="FormData.password">
+                                <p @click="togglePasswordVisibility"
+                                    class="cursor-pointer hover:underline text-gray-700 flex items-center text-sm text-clr-primary gap-2">
+                                    <!-- On -->
+                                    <svg v-if="!showPassword" class="w-[16px] h-[16px]" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                        viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-width="1.5"
+                                            d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                                        <path stroke="currentColor" stroke-width="1.5"
+                                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                    <!-- Off -->
+                                    <svg v-else class="w-[16px] h-[16px]" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                        viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="1.5"
+                                            d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                    <span>{{ !showPassword ? 'Show' : 'Hide' }} Password</span>
+                                </p>
+                            </f7-list-item>
+
+                            <f7-list-item @click="toggleTermsCheckbox" checkbox
+                                title="Agree on our Terms and Conditions." name="demo-checkbox"></f7-list-item>
 
                             <f7-list-item>
-                                <f7-button class="w-full" fill large>Sign up</f7-button>
+                                <f7-button preloader :loading="isRequest" @click="handleSignUp" class="w-full" fill
+                                    large>Sign up</f7-button>
                             </f7-list-item>
                         </f7-list>
                     </form>

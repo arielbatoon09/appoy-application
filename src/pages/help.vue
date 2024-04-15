@@ -1,10 +1,23 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { auth, database } from '../firebase';
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, serverTimestamp, addDoc } from "firebase/firestore";
 import MainLayout from '../components/layout/main-layout.vue';
 
 const currentPage = 'help';
+const db = database;
+const userData = ref('');
 const coordinates = ref(null);
 
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            userData.value = user;
+            // console.log(userData.value);
+        }
+    });
+};
 const getCoordinates = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -21,12 +34,39 @@ const getCoordinates = () => {
     }
 };
 
-const googleMapLink = computed(() => {
-    if (coordinates.value) {
-        return `https://www.google.com/maps?q=${coordinates.value}`;
-    } else {
-        return null;
+const handleAskHelp = async (fireStage) => {
+    try {
+        // Get Coordinates
+        getCoordinates();
+
+        if (!coordinates.value) {
+            return alert('Need to activate GPS');
+        };
+
+        // Process Data
+        const { uid, displayName } = userData.value;
+        const queryCollection = collection(db, 'help');
+        const response = await addDoc(queryCollection, {
+            uid: uid,
+            fullname: displayName,
+            stage: fireStage,
+            googleMap: `https://www.google.com/maps?q=${coordinates.value}`,
+            phone: '091231231',
+            status: 'Pending',
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp(),
+        });
+
+        console.log(response);
+
+
+    } catch (error) {
+        return { code: 400, status: 'error', message: error.message };
     }
+}
+
+onMounted(() => {
+    isLoggedState();
 });
 </script>
 
@@ -55,7 +95,7 @@ const googleMapLink = computed(() => {
                             class="text-yellow-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
                     <br>
-                    <f7-button @click="getCoordinates" color="yellow" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Growth Stage')" color="yellow" large tonal round>Ask Help</f7-button>
                 </div>
                 <!-- Learn more: Fully Developed Stage -->
                 <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -71,7 +111,7 @@ const googleMapLink = computed(() => {
                     <p class="text-gray-600 mb-7">The fire has already consumed an entire room and place. Click <span
                             class="text-red-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
-                    <f7-button @click="getCoordinates" color="red" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Fully Developed Stage')" color="red" large tonal round>Ask Help</f7-button>
                 </div>
                 <!-- Learn more: Decay Stage -->
                 <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -88,12 +128,9 @@ const googleMapLink = computed(() => {
                             class="text-orange-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
                     <br>
-                    <f7-button @click="getCoordinates" color="orange" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Decay Stage')" color="orange" large tonal round>Ask Help</f7-button>
                 </div>
             </div>
-
-            <p v-if="coordinates">Coordinates: {{ coordinates }}</p>
-            <f7-link v-if="coordinates" :href="googleMapLink" external>{{ googleMapLink }}</f7-link>
         </div>
     </MainLayout>
 </template>

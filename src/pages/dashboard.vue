@@ -1,9 +1,21 @@
 <script setup>
 import { f7 } from 'framework7-vue';
+import { ref, onMounted } from 'vue';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../firebase';
 import MainLayout from '../components/layout/main-layout.vue';
 import NatureIllustration from '../assets/nature-illustration.svg';
 
 const currentPage = 'home';
+const userData = ref({});
+
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            userData.value = user;
+        }
+    });
+};
 
 // Redirection to other Page
 const goToPage = (route) => {
@@ -12,6 +24,10 @@ const goToPage = (route) => {
         animate: animate,
     });
 };
+
+onMounted(() => {
+    isLoggedState();
+});
 </script>
 
 <template>
@@ -19,8 +35,7 @@ const goToPage = (route) => {
         <!-- Welcome Box -->
         <div class="bg-white rounded-xl app-shadow flex justify-between h-40 p-10">
             <div class="space-y-2">
-                <h3 class="text-2xl font-normal text-gray-700">Hi <span class="font-bold">Ariel
-                        Batoon</span>,</h3>
+                <h3 class="text-2xl font-normal text-gray-700">Hi <span class="font-bold">{{ userData.displayName }}</span>,</h3>
                 <p class="text-gray-700 text-xl">Welcome back! 👋</p>
             </div>
             <div class="w-20">

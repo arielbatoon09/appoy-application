@@ -4,20 +4,25 @@
 @tailwind utilities;
 
 .text-clr-primary {
-  color: #B90B0B;
+  color: #b90b0b;
 }
 .bg-clr-primary {
-  background: #B90B0B;
+  background: #b90b0b;
 }
 .app-shadow {
   box-shadow: rgba(90, 114, 123, 0.11) 0px 7px 30px 0px;
 }
 .sidebar-clr-primary {
-  background: #B90B0B;
+  background: #b90b0b;
 }
 .sidebar-clr-primary:hover {
   background: #af0606;
 }
 .ripple-wave {
   background: transparent;
+}
+.toast {
+  background: #373737;
+  box-shadow: rgba(90, 114, 123, 0.11) 0px 7px 30px 0px;
+  color: #FFF;
 }
