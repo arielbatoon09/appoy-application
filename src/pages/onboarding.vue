@@ -91,7 +91,7 @@ const setOnboardingStatus = () => {
                     <div class="flex flex-col items-center px-6">
                         <!-- Info -->
                         <div class="text-center mt-10">
-                            <h3 class="text-gray-700 text-2xl font-bold mb-2">APPoy</h3>
+                            <h3 class="text-gray-700 text-2xl font-bold mb-2">Appoy</h3>
                             <p class="text-gray-600 text-base">Ready in any fire emergencies.</p>
                         </div>
                         <!-- Slide Indicator -->
