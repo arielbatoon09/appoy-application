@@ -1,54 +1,99 @@
 <script setup>
+import { f7 } from 'framework7-vue';
 import { ref, computed, onMounted } from 'vue';
 import { auth, database } from '../firebase';
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, serverTimestamp, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, serverTimestamp, onSnapshot } from "firebase/firestore";
 import MainLayout from '../components/layout/main-layout.vue';
 
 const currentPage = 'help';
 const db = database;
 const userData = ref('');
 const coordinates = ref(null);
+const gpsEnabled = ref(false);
+const status = ref('Loading...');
 
+// Check Logged State and Data
 const isLoggedState = () => {
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            userData.value = user;
-            // console.log(userData.value);
-        }
+    return new Promise((resolve, reject) => {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userData.value = user;
+                try {
+                    const queryRef = query(collection(db, 'help'), where('uid', '==', userData.value.uid), where('status', '==', 'Pending'));
+
+                    onSnapshot(queryRef, (snapshot) => {
+                        status.value = snapshot.empty ? 'No Request' : 'On-Going';
+                    });
+
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            } else {
+                reject(new Error('User is not logged in'));
+            }
+        });
     });
 };
+
 const getCoordinates = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 coordinates.value = `${position.coords.latitude},${position.coords.longitude}`;
+                gpsEnabled.value = true;
             },
             (error) => {
                 console.error('Error getting geolocation:', error);
+                gpsEnabled.value = false;
             },
             { enableHighAccuracy: true }
         );
     } else {
         alert('Geolocation is not supported by this browser.');
+        gpsEnabled.value = false;
     }
+};
+
+const enableGPS = () => {
+    getCoordinates();
 };
 
 const handleAskHelp = async (fireStage) => {
     try {
-        // Get Coordinates
-        getCoordinates();
-
         if (!coordinates.value) {
-            return alert('Need to activate GPS');
-        };
+            const toast = f7.toast.create({
+                text: `Need to activate GPS Location.`,
+                closeButton: true,
+                closeButtonText: 'Okay',
+                closeButtonColor: 'red',
+                closeTimeout: 3000,
+            });
+
+            toast.open();
+            return;
+        }
+
+        // Check if the user already requested
+        const querySnapshot = await getDocs(query(collection(db, 'help'), where('uid', '==', userData.value.uid), where('status', '==', 'Pending')));
+        if (!querySnapshot.empty) {
+            const toast = f7.toast.create({
+                text: `Already have a pending request.`,
+                closeButton: true,
+                closeButtonText: 'Okay',
+                closeButtonColor: 'red',
+                closeTimeout: 3000,
+            });
+
+            toast.open();
+            return;
+        }
 
         // Process Data
-        const { uid, displayName } = userData.value;
-        const queryCollection = collection(db, 'help');
-        const response = await addDoc(queryCollection, {
-            uid: uid,
-            fullname: displayName,
+        const response = await addDoc(collection(db, 'help'), {
+            uid: userData.value.uid,
+            fullname: userData.value.displayName,
             stage: fireStage,
             googleMap: `https://www.google.com/maps?q=${coordinates.value}`,
             phone: '091231231',
@@ -57,9 +102,36 @@ const handleAskHelp = async (fireStage) => {
             updated_at: serverTimestamp(),
         });
 
-        console.log(response);
+        // Trigger Notification
+        triggerNotification();
 
+        const toast = f7.toast.create({
+            text: `Successfully sent requst.`,
+            closeButton: true,
+            closeButtonText: 'Okay',
+            closeButtonColor: 'green',
+            closeTimeout: 3000,
+        });
 
+        toast.open();
+
+        console.log('Saved Data: ', response);
+    } catch (error) {
+        return { code: 400, status: 'error', message: error.message };
+    }
+};
+
+const triggerNotification = async () => {
+    try {
+        // Process Data
+        await addDoc(collection(db, 'notification'), {
+            uid: userData.value.uid,
+            sender: userData.value.displayName,
+            to: 'Administrator',
+            message: 'Request',
+            is_read: false,
+            created_at: serverTimestamp(),
+        });
     } catch (error) {
         return { code: 400, status: 'error', message: error.message };
     }
@@ -67,6 +139,7 @@ const handleAskHelp = async (fireStage) => {
 
 onMounted(() => {
     isLoggedState();
+    getCoordinates();
 });
 </script>
 
@@ -76,6 +149,19 @@ onMounted(() => {
             <div>
                 <h2 class="text-xl font-normal text-gray-500">Appoy</h2>
                 <h3 class="text-3xl text-gray-800 font-bold">Ask for help</h3>
+            </div>
+
+            <div>
+                <p class="text-gray-600">
+                    <strong>Status:</strong> <span>{{ status }}</span>
+                </p>
+                <p class="text-gray-600">
+                    <strong>GPS Location:</strong>
+                    {{ gpsEnabled ? 'Enabled' : 'Disabled' }}
+                    <span v-if="!gpsEnabled">
+                        (<a class="hover:underline" href="#" @click="enableGPS">Enable now</a>)
+                    </span>
+                </p>
             </div>
 
             <!-- Action for Help -->
@@ -95,7 +181,8 @@ onMounted(() => {
                             class="text-yellow-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
                     <br>
-                    <f7-button @click="handleAskHelp('Growth Stage')" color="yellow" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Growth Stage')" color="yellow" large tonal round>Ask
+                        Help</f7-button>
                 </div>
                 <!-- Learn more: Fully Developed Stage -->
                 <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -111,7 +198,8 @@ onMounted(() => {
                     <p class="text-gray-600 mb-7">The fire has already consumed an entire room and place. Click <span
                             class="text-red-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
-                    <f7-button @click="handleAskHelp('Fully Developed Stage')" color="red" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Fully Developed Stage')" color="red" large tonal round>Ask
+                        Help</f7-button>
                 </div>
                 <!-- Learn more: Decay Stage -->
                 <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -128,7 +216,8 @@ onMounted(() => {
                             class="text-orange-500 font-medium">"Ask Help"</span> to ask help.
                     </p>
                     <br>
-                    <f7-button @click="handleAskHelp('Decay Stage')" color="orange" large tonal round>Ask Help</f7-button>
+                    <f7-button @click="handleAskHelp('Decay Stage')" color="orange" large tonal round>Ask
+                        Help</f7-button>
                 </div>
             </div>
         </div>

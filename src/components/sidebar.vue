@@ -1,4 +1,49 @@
 <script setup>
+import { ref, onMounted } from 'vue';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, database } from '../firebase';
+import { collection, query, serverTimestamp, addDoc, where, doc, updateDoc, orderBy, onSnapshot } from "firebase/firestore";
+
+const db = database;
+const unreadNotificationsCount = ref(0); 
+
+const isLoggedState = () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            getUnreadNotif(user);
+        }
+    });
+};
+
+const getUnreadNotif = (userData) => {
+    try {
+        const queryCollection = query(
+            collection(db, "notification"),
+            where('to', '==', userData.displayName),
+            where('is_read', '==', false),
+            orderBy("created_at", "desc")
+        );
+
+        onSnapshot(queryCollection, (querySnapshot) => {
+            const listData = [];
+
+            querySnapshot.forEach((item) => {
+                const list = {
+                    id: item.id,
+                    uid: item.data().uid,
+                    sender: item.data().sender,
+                    to: item.data().to,
+                    is_read: item.data().is_read,
+                };
+                listData.push(list);
+            });
+
+            unreadNotificationsCount.value = listData.length;
+        });
+    } catch (error) {
+        console.error("System Error: ", error);
+    }
+};
 
 const props = defineProps({
     currentPage: String
@@ -8,9 +53,13 @@ const props = defineProps({
 const isPageActive = (pageName) => {
     const active = 'sidebar-clr-primary text-white p-2 rounded-lg transition-transform flex items-center gap-6 mb-2';
     const inActive = 'hover:bg-gray-100 text-gray-700 p-2 rounded-lg transition-transform flex items-center gap-4 mb-2';
-    
+
     return props.currentPage === pageName ? active : inActive;
 };
+
+onMounted(() => {
+    isLoggedState();
+});
 </script>
 
 <template>
@@ -55,6 +104,8 @@ const isPageActive = (pageName) => {
                                     d="M12 5.365V3m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175 0 .593 0 1.292-.538 1.292H5.538C5 18 5 17.301 5 16.708c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 12 5.365ZM8.733 18c.094.852.306 1.54.944 2.112a3.48 3.48 0 0 0 4.646 0c.638-.572 1.236-1.26 1.33-2.112h-6.92Z" />
                             </svg>
                             <span class="text-lg">Notification</span>
+                            <span
+                                class="bg-gray-100 text-gray-700 rounded-full w-5 h-5 text-center font-medium">{{ unreadNotificationsCount }}</span>
                         </f7-link>
                     </li>
                     <!-- Settings Group -->

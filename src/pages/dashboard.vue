@@ -100,11 +100,11 @@ onMounted(() => {
             </div>
         </div>
 
-        <h3 class="mt-12 mb-2 text-gray-300 text-xl font-medium">
+        <h3 v-show="userData.email === 'admin@appoy.com'" class="mt-12 mb-2 text-gray-300 text-xl font-medium">
             Administrative
         </h3>
         <!-- For Rescuer -->
-        <div class="grid grid-cols-1 mb-20">
+        <div v-show="userData.email === 'admin@appoy.com'" class="grid grid-cols-1 mb-20">
             <!-- Asking for help table -->
             <div class="bg-white rounded-xl h-72 w-full p-6 text-center app-shadow flex flex-col items-center">
                 <div class="flex flex-col items-center mb-4">
