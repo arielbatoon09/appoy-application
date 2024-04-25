@@ -1,4 +1,5 @@
 <script setup>
+import { f7 } from 'framework7-vue';
 import { ref, onMounted, computed } from 'vue';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, database } from '../firebase';
@@ -7,6 +8,7 @@ import MainLayout from '../components/layout/main-layout.vue';
 
 const currentPage = 'notification';
 const data = ref({});
+const userData = ref({});
 const db = database;
 const filterType = ref('all');
 const isLoading = ref(false);
@@ -15,6 +17,7 @@ const isLoggedState = () => {
     onAuthStateChanged(auth, (user) => {
         if (user) {
             renderData(user);
+            userData.value = user;
         }
     });
 };
@@ -72,6 +75,8 @@ const getNotificationMessage = (message) => {
             return 'rescuer is on the way.';
         case 'Rejected':
             return 'rejected your request. Kindly check your phone number.';
+        case 'Completed':
+            return 'rescuer completed the rescue. Stay safe always!'
         default:
             return '';
     }
@@ -80,10 +85,15 @@ const getNotificationMessage = (message) => {
 const updateIsRead = async (id) => {
     try {
         const docRef = doc(db, "notification", id);
-
+        
         await updateDoc(docRef, {
             is_read: true,
         });
+
+        if (userData.value.email === 'admin@appoy.com') {
+            goToPage('/emergency');
+            return;
+        }
 
     } catch (error) {
         console.error("System Error: ", error);
@@ -108,6 +118,14 @@ const getTimeAgoString = (createdAt) => {
         const days = Math.floor(timeDifferenceInSeconds / 86400);
         return `${days} day${days > 1 ? 's' : ''} ago`;
     }
+};
+
+// Redirection to other Page
+const goToPage = (route) => {
+    const animate = window.innerWidth <= 1023;
+    f7.views.main.router.navigate(route, {
+        animate: animate,
+    });
 };
 
 onMounted(() => {

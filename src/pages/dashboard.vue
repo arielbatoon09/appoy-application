@@ -35,8 +35,17 @@ onMounted(() => {
         <!-- Welcome Box -->
         <div class="bg-white rounded-xl app-shadow flex justify-between h-40 p-10">
             <div class="space-y-2">
-                <h3 class="text-2xl font-normal text-gray-700">Hi <span class="font-bold">{{ userData.displayName }}</span>,</h3>
+                <h3 class="text-2xl font-normal text-gray-700">Hi <span class="font-bold">{{ userData.displayName
+                        }}</span>,</h3>
                 <p class="text-gray-700 text-xl">Welcome back! 👋</p>
+                <p @click="goToPage('/terms-and-conditions')" class="cursor-pointer mt-3 text-gray-600 hover:underline flex">
+                    Read terms and conditions
+                    <svg class="w-[24px] h-[24px] text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                        height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="m10 16 4-4-4-4" />
+                    </svg>
+                </p>
             </div>
             <div class="w-20">
                 <img :src="NatureIllustration" />
@@ -63,7 +72,7 @@ onMounted(() => {
                 <p class="text-gray-600 mb-7">Fire has just started and is relatively small. Click <span
                         class="text-yellow-500 font-medium">"Learn more"</span> to understand more.
                 </p>
-                <f7-button color="yellow" large tonal round>Learn more</f7-button>
+                <f7-button @click="goToPage('/learn-growth')" color="yellow" large tonal round>Learn more</f7-button>
             </div>
             <!-- Learn more: Fully Developed Stage -->
             <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -79,7 +88,8 @@ onMounted(() => {
                 <p class="text-gray-600 mb-7">The fire has already consumed an entire room and place. Click <span
                         class="text-red-500 font-medium">"Learn more"</span> to understand more.
                 </p>
-                <f7-button color="red" large tonal round>Learn more</f7-button>
+                <f7-button @click="goToPage('/learn-fully-developed')" color="red" large tonal round>Learn
+                    more</f7-button>
             </div>
             <!-- Learn more: Decay Stage -->
             <div class="bg-white rounded-xl h-74 w-full p-6 text-center app-shadow">
@@ -96,7 +106,7 @@ onMounted(() => {
                         class="text-orange-500 font-medium">"Learn more"</span> to understand more.
                 </p>
                 <br>
-                <f7-button color="orange" large tonal round>Learn more</f7-button>
+                <f7-button @click="goToPage('/learn-decay')" color="orange" large tonal round>Learn more</f7-button>
             </div>
         </div>
 
@@ -118,8 +128,10 @@ onMounted(() => {
                 <p class="text-gray-600 mb-7 w-full lg:w-1/2">Manage the upcoming and ongoing emergency. Click <span
                         class="text-purple-500 font-medium">"Go to Emergency"</span> to check the list.
                 </p>
-                <f7-button @click="goToPage('/emergency')" color="purple" large tonal round class="w-full lg:w-1/6">Go to Emergency</f7-button>
+                <f7-button @click="goToPage('/emergency')" color="purple" large tonal round class="w-full lg:w-1/6">Go
+                    to Emergency</f7-button>
             </div>
         </div>
+        <div v-show="userData.email !== 'admin@appoy.com'" class="mb-20"></div>
     </MainLayout>
 </template>

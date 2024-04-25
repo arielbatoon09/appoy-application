@@ -12,6 +12,7 @@ const userData = ref('');
 const coordinates = ref(null);
 const gpsEnabled = ref(false);
 const status = ref('Loading...');
+const PhoneNumber = ref(null);
 
 // Check Logged State and Data
 const isLoggedState = () => {
@@ -19,8 +20,13 @@ const isLoggedState = () => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userData.value = user;
+                renderPhoneData(user);
                 try {
-                    const queryRef = query(collection(db, 'help'), where('uid', '==', userData.value.uid), where('status', '==', 'Pending'));
+                    const queryRef = query(
+                        collection(db, 'help'),
+                        where('uid', '==', userData.value.uid),
+                        where('status', 'in', ['Pending', 'Accepted'])
+                    );
 
                     onSnapshot(queryRef, (snapshot) => {
                         status.value = snapshot.empty ? 'No Request' : 'On-Going';
@@ -75,8 +81,23 @@ const handleAskHelp = async (fireStage) => {
             return;
         }
 
+        // Check if the user has phone number
+        if (!PhoneNumber.value) {
+            const toast = f7.toast.create({
+                text: `No phone number found.`,
+                closeButton: true,
+                closeButtonText: 'Okay',
+                closeButtonColor: 'red',
+                closeTimeout: 3000,
+            });
+
+            toast.open();
+            goToPage('/phone');
+            return;
+        }
+
         // Check if the user already requested
-        const querySnapshot = await getDocs(query(collection(db, 'help'), where('uid', '==', userData.value.uid), where('status', '==', 'Pending')));
+        const querySnapshot = await getDocs(query(collection(db, 'help'), where('uid', '==', userData.value.uid), where('status', 'in', ['Pending', 'Accepted'])));
         if (!querySnapshot.empty) {
             const toast = f7.toast.create({
                 text: `Already have a pending request.`,
@@ -96,7 +117,7 @@ const handleAskHelp = async (fireStage) => {
             fullname: userData.value.displayName,
             stage: fireStage,
             googleMap: `https://www.google.com/maps?q=${coordinates.value}`,
-            phone: '091231231',
+            phone: PhoneNumber.value,
             status: 'Pending',
             created_at: serverTimestamp(),
             updated_at: serverTimestamp(),
@@ -135,7 +156,34 @@ const triggerNotification = async () => {
     } catch (error) {
         return { code: 400, status: 'error', message: error.message };
     }
-}
+};
+
+const renderPhoneData = async (user) => {
+    try {
+        const queryCollection = query(
+            collection(db, "phone"),
+            where("uid", "==", user.uid)
+        );
+
+
+        onSnapshot(queryCollection, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                PhoneNumber.value = doc.data().phoneNumber;
+            });
+        });
+
+    } catch (error) {
+        console.error("Error System: ", error);
+    }
+};
+
+// Redirection to other Page
+const goToPage = (route) => {
+    const animate = window.innerWidth <= 1023;
+    f7.views.main.router.navigate(route, {
+        animate: animate,
+    });
+};
 
 onMounted(() => {
     isLoggedState();

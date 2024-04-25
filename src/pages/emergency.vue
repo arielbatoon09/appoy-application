@@ -86,6 +86,30 @@ const updateStatus = async (HelpId, status) => {
     }
 };
 
+const completedStatus = async (HelpId) => {
+    try {
+        const docRef = doc(db, "help", HelpId);
+
+        await updateDoc(docRef, {
+            status: 'Completed'
+        });
+
+        const toast = f7.toast.create({
+            text: `Marked as completed`,
+            closeButton: true,
+            closeButtonText: 'Okay',
+            closeButtonColor: 'green',
+            closeTimeout: 3000,
+        });
+
+        // Open the toast
+        toast.open();
+
+    } catch (error) {
+        console.error("System Error: ", error);
+    }
+};
+
 const triggerNotification = async (HelpName, status) => {
     try {
         // Process Data
@@ -137,14 +161,16 @@ onMounted(() => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9 9a3 3 0 0 1 3-3m-2 15h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 6 9c0 4 4 5 4 9h4Z" />
                     </svg>
-                    <span class="text-gray-600"><strong>Reminder:</strong> Make sure to make a follow-up call before accepting the
+                    <span class="text-gray-600"><strong>Reminder:</strong> Make sure to make a follow-up call before
+                        accepting the
                         request.</span>
                 </p>
             </div>
 
             <!-- Data -->
             <div v-if="data.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div v-for="help in data" :key="help.id" class="bg-white rounded-xl w-full p-6 app-shadow h-auto lg:h-[15rem]">
+                <div v-for="help in data" :key="help.id"
+                    class="bg-white rounded-xl w-full p-6 app-shadow h-auto lg:h-[15rem]">
                     <div class="flex items-center gap-3 mb-4">
                         <div
                             class="bg-yellow-800 text-white rounded-full w-12 h-12 flex flex-col justify-center items-center">
@@ -179,14 +205,18 @@ onMounted(() => {
 
                     <!-- Action Button -->
                     <div v-if="help.status === 'Pending'" class="flex gap-2 mt-4">
-                        <f7-button @click="updateStatus(help.id, 'Accepted'), triggerNotification(help.fullname, 'Accepted')" tonal color="blue" class="rounded-full">
+                        <f7-button
+                            @click="updateStatus(help.id, 'Accepted'), triggerNotification(help.fullname, 'Accepted')"
+                            tonal color="blue" class="rounded-full">
                             <svg class="w-[24px] h-[24px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="1.5" d="M5 11.917 9.724 16.5 19 7.5" />
                             </svg>
                         </f7-button>
-                        <f7-button @click="updateStatus(help.id, 'Rejected'), triggerNotification(help.fullname, 'Rejected')" tonal color="red" class="rounded-full">
+                        <f7-button
+                            @click="updateStatus(help.id, 'Rejected'), triggerNotification(help.fullname, 'Rejected')"
+                            tonal color="red" class="rounded-full">
                             <svg class="w-[24px] h-[24px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -198,13 +228,24 @@ onMounted(() => {
 
                     <!-- Status-mark -->
                     <div v-else class="mt-7">
-                        <p v-if="help.status === 'Accepted'" class="text-green-700 font-bold flex items-center">
+                        <p @click="completedStatus(help.id), triggerNotification(help.fullname, 'Completed')"
+                            v-if="help.status === 'Accepted'"
+                            class="cursor-pointer hover:underline text-green-700 font-bold flex items-center">
                             <svg class="w-[24px] h-[24px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="1.5" d="M5 11.917 9.724 16.5 19 7.5" />
                             </svg>
-                            <span>Accepted</span>
+                            <span>Mark as Completed</span>
+                        </p>
+
+                        <p v-if="help.status === 'Completed'" class="text-green-700 font-bold flex items-center">
+                            <svg class="w-[24px] h-[24px] mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.5" d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <span>Completed</span>
                         </p>
 
                         <p v-if="help.status === 'Rejected'" class="text-red-700 font-bold flex items-center">
