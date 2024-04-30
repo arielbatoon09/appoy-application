@@ -173,16 +173,16 @@ onMounted(() => {
                     class="bg-white rounded-xl w-full p-6 app-shadow h-auto lg:h-[15rem]">
                     <div class="flex items-center gap-3 mb-4">
                         <div
-                            class="bg-yellow-800 text-white rounded-full w-12 h-12 flex flex-col justify-center items-center">
+                            class="bg-yellow-800 text-white rounded-full w-12 h-12 flex flex-col justify-center items-center shrink-0">
                             <p class="font-medium text-xl" v-if="help.fullname">{{ help.fullname.charAt(0) }}</p>
                         </div>
                         <div>
-                            <h4 class="text-xl text-gray-700 font-bold">{{ help.fullname }}</h4>
-                            <p class="text-gray-500 font-medium text-base">{{ help.phone ? help.phone : 'N/A' }}</p>
+                            <h4 class="text-sm text-gray-700 font-bold truncate whitespace-nowrap">{{ help.fullname }}</h4>
+                            <p class="text-gray-500 font-medium text-sm">{{ help.phone ? help.phone : 'N/A' }}</p>
                         </div>
                     </div>
                     <!-- Fire Stage Status -->
-                    <p :class="getStageColor(help.stage)" class="flex items-center text-base mb-2">
+                    <p :class="getStageColor(help.stage)" class="flex items-center text-sm mb-2">
                         <svg class="w-6 h-6 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                             height="24" fill="currentColor" viewBox="0 0 24 24">
                             <path
@@ -191,7 +191,7 @@ onMounted(() => {
                         <span class="font-semibold mr-1">Stage:</span> {{ help.stage }}
                     </p>
                     <!-- Google Map Coordinates Link -->
-                    <f7-link class="text-green-500 text-base" external :href="help.googleMap">
+                    <f7-link class="text-green-500 text-sm" external :href="help.googleMap">
                         <svg class="w-[24px] h-[24px] mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                             width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"

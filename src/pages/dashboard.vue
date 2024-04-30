@@ -33,7 +33,7 @@ onMounted(() => {
 <template>
     <MainLayout :currentPage="currentPage">
         <!-- Welcome Box -->
-        <div class="bg-white rounded-xl app-shadow flex justify-between h-40 p-10">
+        <div class="bg-white rounded-xl app-shadow flex justify-between flex-wrap lg:flex-nowrap h-auto lg:h-40 p-4 lg:p-10">
             <div class="space-y-2">
                 <h3 class="text-2xl font-normal text-gray-700">Hi <span class="font-bold">{{ userData.displayName
                         }}</span>,</h3>
