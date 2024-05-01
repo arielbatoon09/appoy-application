@@ -65,7 +65,7 @@ export const useAuthStore = defineStore('auth', {
 				await signInWithEmailAndPassword(auth, email, password);
 		
 				// Success
-				return { code: 200, status: 'success', message: 'Login successful' };
+				return { code: 200, status: 'success', message: 'Login successfully' };
 
 			} catch (error) {
 				if (error.code === 'auth/invalid-email' || error.code === 'auth/invalid-credential') {
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', {
 				await signOut(auth);
 
 				// Success
-				return { code: 200, status: 'success', message: 'Logout successful' };
+				return { code: 200, status: 'success', message: 'Logout successfully' };
 			} catch (error) {
 				return { code: 400, status: 'error', message: error.message };
 			}
