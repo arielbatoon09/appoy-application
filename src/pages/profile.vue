@@ -88,7 +88,7 @@ onMounted(() => {
                 <h3 class="text-3xl text-gray-800 font-bold">Settings</h3>
             </div>
 
-            <div class="bg-white p-5 h-[490px] rounded-2xl app-shadow">
+            <div class="bg-white p-5 h-[500px] rounded-2xl app-shadow">
                 <h4 class="font-semibold text-xl text-gray-700 mb-12">Profile</h4>
                 <div class="flex flex-col items-center">
                     <div
