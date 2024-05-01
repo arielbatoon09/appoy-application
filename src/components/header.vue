@@ -81,18 +81,18 @@ const toggleModal = () => {
 
             <!-- Modal Profile Dropdown -->
             <div v-if="isModalOpen"
-                class="absolute bg-white w-[320px] lg:w-[370px] h-[250px] p-6 right-4 top-20 rounded-xl app-shadow"
+                class="absolute bg-white w-[350px] lg:w-[370px] h-[250px] p-6 right-4 top-20 rounded-xl app-shadow"
                 :class="{ 'transition-opacity duration-300 ease-in-out': isModalOpen }">
                 <h2 class="text-gray-400 font-medium text-lg mb-4">User Profile</h2>
                 <div @click="goToPage('/profile'), toggleModal()"
                     class="cursor-pointer flex items-center hover:bg-gray-100 gap-3 mb-4 rounded-lg delay-75 border-b p-2">
                     <div
-                        class="bg-yellow-800 text-white rounded-full w-16 h-16 flex flex-col justify-center items-center">
+                        class="bg-yellow-800 text-white rounded-full w-16 h-16 flex flex-col justify-center items-center shrink-0">
                         <p class="font-medium text-4xl" v-if="props.userData && props.userData.displayName">{{ props.userData.displayName.charAt(0) }}</p>
                     </div>
-                    <div>
-                        <h4 class="text-lg text-gray-600 font-medium">{{ props.userData.displayName }}</h4>
-                        <p class="text-gray-400 font-normal text-base">{{ props.userData.email }}</p>
+                    <div class="truncate">
+                        <h4 class="text-lg text-gray-600 font-medium whitespace-nowrap truncate">{{ props.userData.displayName }}</h4>
+                        <p class="text-gray-400 font-normal text-base whitespace-nowrap truncate">{{ props.userData.email }}</p>
                     </div>
                 </div>
                 <f7-button preloader :loading="isRequest" @click="handleLogout" fill>
