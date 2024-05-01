@@ -1,7 +1,3 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from '../firebase';
-import { f7 } from 'framework7-vue';
-
 import useCookies from 'vue-cookies';
 import OnboardingPage from '../pages/onboarding.vue';
 import LoginPage from '../pages/login.vue';
