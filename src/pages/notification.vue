@@ -85,7 +85,7 @@ const getNotificationMessage = (message) => {
 const updateIsRead = async (id) => {
     try {
         const docRef = doc(db, "notification", id);
-        
+
         await updateDoc(docRef, {
             is_read: true,
         });
@@ -145,8 +145,12 @@ onMounted(() => {
             <div class="bg-white p-4 rounded-xl app-shadow">
                 <!-- Filter Tag -->
                 <div class="flex gap-2 mb-7">
-                    <f7-button fill tonal class="text-clr-primary" @click="filterType = 'all'">All</f7-button>
-                    <f7-button class="text-gray-700" @click="filterType = 'unread'">Unread</f7-button>
+                    <f7-button :fill="filterType === 'all' ? true : undefined"
+                        :tonal="filterType === 'all' ? true : undefined" :class="filterType === 'all' ? 'text-clr-primary' : 'text-gray-700'"
+                        @click="filterType = 'all'">All</f7-button>
+                    <f7-button :fill="filterType === 'unread' ? true : undefined"
+                        :tonal="filterType === 'unread' ? true : undefined" :class="filterType === 'unread' ? 'text-clr-primary' : 'text-gray-700'"
+                        @click="filterType = 'unread'">Unread</f7-button>
                 </div>
 
                 <!-- Notification List -->

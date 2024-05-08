@@ -178,7 +178,7 @@ onMounted(() => {
                         </div>
                         <div>
                             <h4 class="text-sm text-gray-700 font-bold truncate whitespace-nowrap">{{ help.fullname }}</h4>
-                            <p class="text-gray-500 font-medium text-sm">{{ help.phone ? help.phone : 'N/A' }}</p>
+                            <f7-link :href="`${'tel:'+help.phone}`" external class="text-gray-500 font-medium text-sm hover:underline">{{ help.phone ? help.phone : 'N/A' }}</f7-link>
                         </div>
                     </div>
                     <!-- Fire Stage Status -->
